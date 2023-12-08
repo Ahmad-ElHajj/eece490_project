@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block title %}Results{% endblock %}
+
+{% block content %}
+  <h2>Results</h2>
+
+  <form id="pesticideForm" method="post" action="/results">
+    <ul class="list-group">
+    {% for pest, pesticides in pesticides_dict.items() %}
+        <li class="list-group-item">
+            <strong>{{ pest }}:</strong>
+            {% for pesticide in pesticides %}
+              <span class="pesticide-link" data-pesticide="{{ pesticide }}">{{ pesticide }}</span>{% if not loop.last %}, {% endif %}
+            {% endfor %}
+          </li>
+    {% endfor %}
+    </ul>
+
+    <input type="hidden" id="selectedPesticides" name="selectedPesticides" value="">
+
+    <button type="submit" class="btn btn-primary mt-3">Submit My Choice</button>
+  </form>
+
+  <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+  <script>
+    $(document).ready(function () {
+      var selectedPesticides = [];
+
+      // Handle clicking on pesticide names
+      $(".pesticide-link").click(function (e) {
+        e.preventDefault();
+        var pesticideName = $(this).data("pesticide");
+        $(this).toggleClass("text-success");
+
+        // Add or remove the selected pesticide from the array
+        if ($(this).hasClass("text-success")) {
+          selectedPesticides.push(pesticideName);
+        } else {
+          selectedPesticides = selectedPesticides.filter(item => item !== pesticideName);
+        }
+
+        // Update the hidden input value with the selected pesticide names
+        $("#selectedPesticides").val(selectedPesticides.join(','));
+      });
+    });
+  </script>
+{% endblock %}
